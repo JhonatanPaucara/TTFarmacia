@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ttfarmacia/utils/background.dart';
-import 'package:ttfarmacia/models/basic.dart';
+import 'package:ttfarmacia/src/utils/background.dart';
+import 'package:ttfarmacia/src/models/basic.dart';
 
 class Product extends StatefulWidget {
   Product({Key key, this.title}) : super(key: key);

@@ -1,7 +1,7 @@
-class User {
+class UserModel {
   String mail;
   String password;
-  User({this.mail, this.password});
+  UserModel({this.mail, this.password});
 }
 
 class ProductItem {

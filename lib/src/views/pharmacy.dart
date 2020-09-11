@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ttfarmacia/utils/background.dart';
+import 'package:ttfarmacia/src/utils/background.dart';
 
 class Pharmacy extends StatefulWidget {
   Pharmacy({Key key, this.title}) : super(key: key);

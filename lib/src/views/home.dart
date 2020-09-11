@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ttfarmacia/utils/background.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ttfarmacia/src/bloc/auth/bloc.dart';
+import 'package:ttfarmacia/src/utils/background.dart';
 import 'dart:math' as math;
 
 class Home extends StatefulWidget {
   Home({Key key, this.title}) : super(key: key);
-
   final String title;
   @override
   _HomeState createState() => _HomeState();
@@ -23,7 +24,7 @@ class _HomeState extends State<Home> {
             Column(
               children: [
                 SizedBox(height: 70),
-                _iconBar(),
+                _iconBar(context),
                 SizedBox(height: 20),
                 _searchBar(),
                 _flor(context),
@@ -102,7 +103,7 @@ Widget _destacados(context) {
   );
 }
 
-Widget _iconBar() {
+Widget _iconBar(context) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceAround,
     children: [
@@ -118,7 +119,9 @@ Widget _iconBar() {
           onPressed: null),
       IconButton(
           icon: Icon(Icons.person_outline, color: Colors.red[900], size: 40),
-          onPressed: null),
+          onPressed: () {
+            BlocProvider.of<AuthBloc>(context).add(LoggedOut());
+          }),
     ],
   );
 }
@@ -213,15 +216,6 @@ Widget _petalo(Color color, double angle, context, int i) {
         Transform.translate(
             offset: Offset(-mediaSize.width / 16, 0),
             child: _medioPetalo(0, -math.pi / 3, color, context)),
-        /*Transform.translate(
-          offset: Offset(mediaSize.width / 40, 0 * mediaSize.width / 8),
-          child: FlatButton(
-              color: Colors.blue,
-              child: Text(''),
-              onPressed: () {
-                print('petalo $i');
-              }),
-        ),*/
       ],
     ),
   );
