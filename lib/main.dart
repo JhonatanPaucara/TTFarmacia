@@ -8,6 +8,7 @@ import 'package:ttfarmacia/src/views/pharmacy.dart';
 import 'package:ttfarmacia/src/views/productGroup.dart';
 import 'package:ttfarmacia/src/views/product.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:ttfarmacia/src/views/register.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,10 @@ class MyApp extends StatelessWidget {
       routes: {
         'login': (BuildContext context) => Login(
               title: 'TTFarmacia_Login',
+              userUtils: _userUtils,
+            ),
+        'register': (BuildContext context) => Register(
+              title: 'TTFarmacia_Register',
               userUtils: _userUtils,
             ),
         'home': (BuildContext context) => Home(title: 'TTFarmacia_Home'),

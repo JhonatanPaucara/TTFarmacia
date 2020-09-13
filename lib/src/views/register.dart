@@ -1,15 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:ttfarmacia/src/utils/background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ttfarmacia/src/utils/user_utils.dart';
-import 'package:ttfarmacia/src/bloc/login/bloc.dart';
 import 'package:ttfarmacia/src/bloc/auth/bloc.dart';
-import 'package:ttfarmacia/src/views/buttons/create_account_button.dart';
-import 'package:ttfarmacia/src/views/buttons/google_login_button.dart';
-import 'package:ttfarmacia/src/views/buttons/login_button.dart';
+import 'package:ttfarmacia/src/utils/user_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:ttfarmacia/src/bloc/register/bloc.dart';
+import 'package:ttfarmacia/src/utils/background.dart';
+import 'package:ttfarmacia/src/views/buttons/register_account_button.dart';
 
-class Login extends StatelessWidget {
-  Login({Key key, this.title, @required UserUtils userUtils})
+class Register extends StatelessWidget {
+  Register({Key key, this.title, @required UserUtils userUtils})
       : assert(userUtils != null),
         _userUtils = userUtils,
         super(key: key);
@@ -22,45 +20,35 @@ class Login extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: BlocProvider(
-        create: (context) => LoginBloc(userUtils: _userUtils),
-        child: LoginForm(
-          userUtils: _userUtils,
-        ),
+        create: (context) => RegisterBloc(userUtils: _userUtils),
+        child: RegisterForm(),
       ),
     );
   }
 }
 
-class LoginForm extends StatefulWidget {
-  LoginForm({Key key, @required UserUtils userUtils})
-      : assert(userUtils != null),
-        _userUtils = userUtils,
-        super(key: key);
-
-  final UserUtils _userUtils;
+class RegisterForm extends StatefulWidget {
   @override
-  _LoginFormState createState() => _LoginFormState();
+  _RegisterFormState createState() => _RegisterFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  LoginBloc _loginBloc;
-
-  UserUtils get _userUtils => widget._userUtils;
+  RegisterBloc _registerBloc;
 
   bool get isPopulated =>
       _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
 
-  bool isLoginButtonEnabled(LoginState state) {
+  bool isRegisterButtonEnabled(RegisterState state) {
     return state.isFormValid && isPopulated && !state.isSubmitting;
   }
 
   @override
   void initState() {
     super.initState();
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _registerBloc = BlocProvider.of<RegisterBloc>(context);
     _emailController.addListener(_onEmailChanged);
     _emailController.addListener(_onPasswordChanged);
   }
@@ -69,15 +57,19 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) {
+        print('resgiterState:${state.toString()}');
         if (state.isFailure) {
           Scaffold.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(SnackBar(
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [Text('Login Failure'), Icon(Icons.error)],
+                children: [
+                  Text('Error durante el registro'),
+                  Icon(Icons.error)
+                ],
               ),
               backgroundColor: Colors.red,
             ));
@@ -88,16 +80,20 @@ class _LoginFormState extends State<LoginForm> {
             ..showSnackBar(SnackBar(
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [Text('Loggin in... '), CircularProgressIndicator()],
+                children: [
+                  Text('Registrando... '),
+                  CircularProgressIndicator()
+                ],
               ),
               backgroundColor: Colors.green,
             ));
         }
         if (state.isSuccess) {
           BlocProvider.of<AuthBloc>(context).add(LoggedIn());
+          Navigator.of(context).pop();
         }
       },
-      child: BlocBuilder<LoginBloc, LoginState>(
+      child: BlocBuilder<RegisterBloc, RegisterState>(
         builder: (context, state) {
           return Stack(
             children: [
@@ -111,7 +107,8 @@ class _LoginFormState extends State<LoginForm> {
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          'INICIAR SESIÓN',
+                          'REGISTRO DE NUEVO USUARIO',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.bold,
@@ -159,28 +156,10 @@ class _LoginFormState extends State<LoginForm> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          LoginButton(
-                            onPressed: isLoginButtonEnabled(state)
+                          RegisterAccountButton(
+                            onPressed: isRegisterButtonEnabled(state)
                                 ? _onFormSubmitted
                                 : null,
-                          ),
-                          GoogleLoginButton(
-                            onPressed: () {
-                              Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Loggin in ...'),
-                                    CircularProgressIndicator()
-                                  ],
-                                ),
-                              ));
-                              _loginBloc.add(LoginWithGooglePressed());
-                            },
-                          ),
-                          CreateAccountButton(
-                            userUtils: _userUtils,
                           ),
                         ],
                       )
@@ -196,10 +175,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _onFormSubmitted() {
-    print('INICIANDO SESIÓN');
-    print('email: ${_emailController.text}');
-    print('password: ${_passwordController.text}');
-    _loginBloc.add(LoginWithCredentialsPressed(
+    _registerBloc.add(Submitted(
         email: _emailController.text, password: _passwordController.text));
   }
 
@@ -211,10 +187,10 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _onEmailChanged() {
-    _loginBloc.add(EmailChanged(email: _emailController.text));
+    _registerBloc.add(EmailChanged(email: _emailController.text));
   }
 
   void _onPasswordChanged() {
-    _loginBloc.add(PasswordChanged(password: _passwordController.text));
+    _registerBloc.add(PasswordChanged(password: _passwordController.text));
   }
 }

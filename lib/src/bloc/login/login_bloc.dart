@@ -22,7 +22,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     });
     final debounceStream = events.where((event) {
       return (event is EmailChanged || event is PasswordChanged);
-    }).debounceTime(Duration(milliseconds: 300));
+    }).debounceTime(Duration(milliseconds: 500));
     return super.transformEvents(
       nonDebounceStream.mergeWith([debounceStream]),
       transitionFn,
@@ -73,7 +73,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       {String email, String password}) async* {
     yield LoginState.loading();
     try {
-      await _userUtils.signInWithCredential(email, password);
+      await _userUtils.signInWithCredential(email.trim(), password.trim());
       yield LoginState.success();
     } catch (e) {
       yield LoginState.failure();
