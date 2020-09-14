@@ -110,12 +110,27 @@ class _LoginFormState extends State<LoginForm> {
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'INICIAR SESIÓN',
-                          style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orange),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                width: 20,
+                                height: 41,
+                                child: Image.asset('left_flower.png')),
+                            Text(
+                              'INICIAR SESIÓN',
+                              style: TextStyle(
+                                  fontFamily: 'KG_Broken_Vessels_Sketch',
+                                  fontSize: 36,
+                                  color: Color(0xFFEC780B)),
+                            ),
+                            Container(
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                width: 20,
+                                height: 41,
+                                child: Image.asset('right_flower.png')),
+                          ],
                         ),
                       ),
                       TextFormField(
